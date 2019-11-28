@@ -1,0 +1,16 @@
+steps:
+  - task: Npm@1
+    displayName: "npm install"
+    inputs:
+      command: install
+      workingDir: "$(Build.SourcesDirectory)/events-components"
+  - task: Npm@1
+    displayName: "Build Angular"
+    inputs:
+      command: custom
+      customCommand: run build
+      workingDir: "$(Build.SourcesDirectory)/events-components"
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: "drop"
+      targetPath: dist/speeds-feeds-calculator
