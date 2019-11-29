@@ -3,14 +3,14 @@ steps:
     displayName: "npm install"
     inputs:
       command: install
-      workingDir: "$(Build.SourcesDirectory)/events-components"
+      workingDir: "$(Build.SourcesDirectory)/components"
   - task: Npm@1
     displayName: "Build Angular"
     inputs:
       command: custom
       customCommand: run build
-      workingDir: "$(Build.SourcesDirectory)/events-components"
+      workingDir: "$(Build.SourcesDirectory)/components"
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: "drop"
-      targetPath: "$(Build.SourcesDirectory)/events-components/dist"
+      targetPath: "$(Build.SourcesDirectory)/components/dist"
