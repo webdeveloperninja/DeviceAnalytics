@@ -31,15 +31,35 @@ steps:
       testRunner: VSTest
       testResultsFiles: "**/*.trx"
   - task: CmdLine@2
-      displayName: "dotnet restore"
-      inputs:
-        script: "dotnet restore"
-        workingDirectory: "$(Build.SourcesDirectory)/Functions"
+    displayName: "dotnet restore"
+    inputs:
+      script: "dotnet restore"
+      workingDirectory: "$(Build.SourcesDirectory)/Functions"
   - task: CmdLine@2
     displayName: "dotnet build"
     inputs:
       script: "dotnet build --configuration Release"
       workingDirectory: "$(Build.SourcesDirectory)/Functions"
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: publish
+      arguments: "--configuration Release --output $(System.DefaultWorkingDirectory)/publish_output"
+      projects: "**/*DeviceAnalytics.csproj"
+      publishWebProjects: false
+      modifyOutputPath: true
+      zipAfterPublish: false
+  - task: ArchiveFiles@2
+    displayName: "Archive files"
+    inputs:
+      rootFolderOrFile: "$(System.DefaultWorkingDirectory)/publish_output/DeviceAnalytics"
+      includeRootFolder: false
+      archiveFile: "build$(Build.BuildId).zip"
+  - task: CopyFiles@2
+    displayName: "copy functions zip"
+    inputs:
+      sourceFolder: "$(Build.SourcesDirectory)"
+      contents: "**/*build$(Build.BuildId).zip"
+      targetFolder: "$(Build.ArtifactStagingDirectory)/Functions"
   - task: PublishPipelineArtifact@1
     displayName: "publish artifact"
     inputs:
