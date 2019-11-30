@@ -13,7 +13,7 @@ steps:
   - task: CopyFiles@2
     displayName: "copy Components to artifact staging directory"
     inputs:
-      sourceFolder: "$(Build.SourcesDirectory)/Components/dist"
+      sourceFolder: "$(Build.SourcesDirectory)/Components/dist/components"
       contents: "**"
       targetFolder: "$(Build.ArtifactStagingDirectory)/Components"
   - task: CopyFiles@2
