@@ -3,14 +3,65 @@ steps:
     displayName: "npm install"
     inputs:
       command: install
-      workingDir: "$(Build.SourcesDirectory)/components"
+      workingDir: "$(Build.SourcesDirectory)/Components"
   - task: Npm@1
     displayName: "Build Angular"
     inputs:
       command: custom
       customCommand: run build
-      workingDir: "$(Build.SourcesDirectory)/components"
-  - task: PublishPipelineArtifact@0
+      workingDir: "$(Build.SourcesDirectory)/Components"
+  - task: CopyFiles@2
+      displayName: "copy components to artifact staging directory"
+      inputs:
+        sourceFolder: "$(Build.SourcesDirectory)/Components/dist"
+        contents: "**"
+        targetFolder: $(Build.ArtifactStagingDirectory)
+  - script: dotnet test Functions/DeviceAnalyticsUnitTests --logger trx
+      displayName: Run Tests
+  - task: PublishTestResults@2
+      displayName: Publish Test Results
+      condition: succeededOrFailed()
+      inputs:
+        testRunner: VSTest
+        testResultsFiles: "**/*.trx"
+  - task: CmdLine@2
+      displayName: "dotnet restore"
+      inputs:
+        script: "dotnet restore"
+        workingDirectory: "$(Build.SourcesDirectory)/Functions"
+  - task: CmdLine@2
+      displayName: "dotnet build"
+      inputs:
+        script: "dotnet build --configuration Release"
+        workingDirectory: "$(Build.SourcesDirectory)/Functions"
+  - task: DotNetCoreCLI@2
+      inputs:
+        command: publish
+        arguments: "--configuration Release --output $(System.DefaultWorkingDirectory)/publish_output"
+        projects: "**/*DeviceAnalytics.csproj"
+        publishWebProjects: false
+        modifyOutputPath: true
+        zipAfterPublish: false
+  - task: ArchiveFiles@2
+    displayName: "Archive files"
     inputs:
-      artifactName: "drop"
-      targetPath: "$(Build.SourcesDirectory)/components/dist"
+      rootFolderOrFile: "$(System.DefaultWorkingDirectory)/publish_output/DeviceAnalytics"
+      includeRootFolder: false
+      archiveFile: "build$(Build.BuildId).zip"
+  - task: CopyFiles@2
+    displayName: "copy functions zip"
+    inputs:
+      sourceFolder: "$(Build.SourcesDirectory)"
+      contents: "**/*build$(Build.BuildId).zip"
+      targetFolder: "$(Build.ArtifactStagingDirectory)/DeviceAnalytics"
+  - task: CopyFiles@2
+    displayName: "copy infrastructure to artifact staging directory"
+    inputs:
+      sourceFolder: "$(Build.SourcesDirectory)/Infrastructure"
+      contents: "**"
+      targetFolder: "$(Build.ArtifactStagingDirectory)/Infrastructure"
+  - task: PublishPipelineArtifact@1
+    displayName: "publish artifact"
+    inputs:
+      artifactName: drop
+      targetPath: $(Build.ArtifactStagingDirectory)
