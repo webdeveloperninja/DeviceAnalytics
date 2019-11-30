@@ -27,3 +27,11 @@ steps:
     inputs:
       artifactName: drop
       targetPath: $(Build.ArtifactStagingDirectory)
+  - script: dotnet test Functions/DeviceAnalyticsUnitTests --logger trx
+    displayName: Run Tests
+  - task: PublishTestResults@2
+    displayName: Publish Test Results
+    condition: succeededOrFailed()
+    inputs:
+      testRunner: VSTest
+      testResultsFiles: "**/*.trx"
