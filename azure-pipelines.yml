@@ -40,14 +40,6 @@ steps:
     inputs:
       script: "dotnet build --configuration Release"
       workingDirectory: "$(Build.SourcesDirectory)/Functions"
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: publish
-      arguments: "--configuration Release --output $(System.DefaultWorkingDirectory)/functions_output"
-      projects: "**/*DeviceAnalytics.csproj"
-      publishWebProjects: false
-      modifyOutputPath: true
-      zipAfterPublish: false
   - task: PublishPipelineArtifact@1
     displayName: "publish artifact"
     inputs:
