@@ -1,18 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Azure.EventHubs;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Extensions.Logging;
-
 namespace DeviceAnalytics
 {
-    public static class Function1
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Microsoft.Azure.EventHubs;
+    using Microsoft.Azure.WebJobs;
+    using Microsoft.Extensions.Logging;
+
+    public static class PersistDeviceEventFunction
     {
-        [FunctionName("Function1")]
-        public static async Task Run([EventHubTrigger("testclienthub", Connection = "eventHubConnection")] EventData[] events, ILogger log)
+        [FunctionName("persist-device-event")]
+        public static async Task Run([EventHubTrigger("allthingssensorshub", ConsumerGroup = "device-analytics", Connection = "eventHubConnection")] EventData[] events, ILogger log)
         {
             var exceptions = new List<Exception>();
 
