@@ -12,6 +12,7 @@ namespace DeviceAnalytics
     using DeviceAnalytics.Infrastructure.Repositories;
     using Microsoft.Extensions.DependencyInjection;
     using DeviceAnalytics.Controllers;
+    using DeviceAnalytics.Infrastructure;
 
     public class Startup : FunctionsStartup
     {
@@ -20,6 +21,7 @@ namespace DeviceAnalytics
             builder.Services.AddMediatR(typeof(Startup).GetTypeInfo().Assembly);
             builder.Services.AddTransient<IDeviceEventRepository, DeviceEventRepository>();
             builder.Services.AddTransient<PersistDeviceEventController>();
+            builder.Services.AddTransient<IConfiguration, Configuration>();
 
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {
