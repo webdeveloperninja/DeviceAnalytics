@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
@@ -9,6 +9,8 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./events-list.component.scss']
 })
 export class EventsListComponent implements OnInit {
+  @Input() deviceId;
+
   displayedColumns: string[] = ['publishedAt', 'eventName', 'data'];
 
   data;
@@ -20,7 +22,7 @@ export class EventsListComponent implements OnInit {
   onGetEventsClick() {
     this.http
       .get(environment.getDeviceEventsApiUrl, {
-        params: { deviceId: '20001f001247343438323536', date: '12/1/2019' }
+        params: { deviceId: this.deviceId, date: '12/1/2019' }
       })
       .subscribe(d => {
         this.data = d;
