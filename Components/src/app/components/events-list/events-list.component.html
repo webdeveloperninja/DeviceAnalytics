@@ -2,7 +2,7 @@
 <table mat-table [dataSource]="data" class="mat-elevation-z8">
   <ng-container matColumnDef="publishedAt">
     <th mat-header-cell *matHeaderCellDef>Published At</th>
-    <td mat-cell *matCellDef="let element"> {{element.publishedAt | date}} </td>
+    <td mat-cell *matCellDef="let element"> {{element.publishedAt | date:'medium'}} </td>
   </ng-container>
   <ng-container matColumnDef="eventName">
     <th mat-header-cell *matHeaderCellDef> Event </th>
