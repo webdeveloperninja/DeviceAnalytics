@@ -1,13 +1,15 @@
 import {
   Component,
-  OnInit,
   Input,
   ViewChild,
-  AfterViewInit
+  AfterViewInit,
+  OnChanges,
+  SimpleChanges,
+  ChangeDetectorRef
 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { MatPaginator, MatTableDataSource } from '@angular/material';
+import { MatPaginator, MatTableDataSource, MatTable } from '@angular/material';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -15,22 +17,29 @@ import { MatPaginator, MatTableDataSource } from '@angular/material';
   templateUrl: './events-list.component.html',
   styleUrls: ['./events-list.component.scss']
 })
-export class EventsListComponent implements OnInit, AfterViewInit {
+export class EventsListComponent implements AfterViewInit, OnChanges {
   @Input() deviceId;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
+  @ViewChild(MatTable, { static: false }) table: MatTable<any>;
 
-  readonly dataSource = new MatTableDataSource();
+  dataSource: MatTableDataSource<any>;
 
-  displayedColumns: string[] = ['publishedAt', 'eventName', 'data'];
+  displayedColumns = ['publishedAt', 'eventName', 'data'];
 
-  constructor(private readonly http: HttpClient) {}
-
-  ngOnInit() {
-    this.getDeviceEvents();
-  }
+  constructor(
+    private readonly http: HttpClient,
+    private changeDetector: ChangeDetectorRef
+  ) {}
 
   ngAfterViewInit() {
+    this.dataSource = new MatTableDataSource();
     this.dataSource.paginator = this.paginator;
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (!!changes.deviceId && !!this.deviceId) {
+      this.getDeviceEvents();
+    }
   }
 
   getDeviceEvents() {
@@ -39,8 +48,10 @@ export class EventsListComponent implements OnInit, AfterViewInit {
         params: { deviceId: this.deviceId, date: '12/1/2019' }
       })
       .subscribe((deviceEvents: any[]) => {
-        this.dataSource.data = deviceEvents;
+        this.dataSource = new MatTableDataSource(deviceEvents);
         this.dataSource.paginator = this.paginator;
+        // TODO figure out why this is needed
+        this.changeDetector.detectChanges();
       });
   }
 }
