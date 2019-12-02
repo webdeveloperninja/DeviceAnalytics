@@ -77,11 +77,10 @@
             var blobs = await GetBlobsForDevice(deviceId, eventsDateTime);
             var orderedBlobs = blobs.OrderByDescending(blob => blob.Properties.LastModified);
 
-            var blobsContentTasks = orderedBlobs.Select(toBlobTextContent);
-
+            var blobsContentTasks = orderedBlobs.Select(toDeviceEvents);
             var blobsContent = await Task.WhenAll(blobsContentTasks);
 
-            var events = blobsContent.SelectMany(content => content.Select(blobEntry => JsonConvert.DeserializeObject<DeviceEvent>(blobEntry)));
+            var events = blobsContent.SelectMany(content => content.Select(blobEntry => blobEntry));
 
             return events;
         }
@@ -95,11 +94,14 @@
             return blobResultSegment.Results.Select(result => result as CloudAppendBlob);
         }
 
-        private async Task<IEnumerable<string>> toBlobTextContent(CloudAppendBlob blob)
+        private async Task<IEnumerable<DeviceEvent>> toDeviceEvents(CloudAppendBlob blob)
         {
             var content = await blob.DownloadTextAsync();
 
-            return content.Split(Environment.NewLine.ToCharArray()).Where(entry => !string.IsNullOrEmpty(entry));
+            var blobEntries = content.Split(Environment.NewLine.ToCharArray()).Where(entry => !string.IsNullOrEmpty(entry));
+            var deviceEvents = blobEntries.Select(b => JsonConvert.DeserializeObject<DeviceEvent>(b));
+
+            return deviceEvents;
         }
     }
 }

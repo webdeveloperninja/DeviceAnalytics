@@ -9,7 +9,13 @@ import {
 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { MatPaginator, MatTableDataSource, MatTable } from '@angular/material';
+import {
+  MatPaginator,
+  MatTableDataSource,
+  MatTable,
+  MatSort,
+  MatSortable
+} from '@angular/material';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -21,6 +27,7 @@ export class EventsListComponent implements AfterViewInit, OnChanges {
   @Input() deviceId;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
   @ViewChild(MatTable, { static: false }) table: MatTable<any>;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   dataSource: MatTableDataSource<any>;
 
@@ -30,7 +37,6 @@ export class EventsListComponent implements AfterViewInit, OnChanges {
 
   ngAfterViewInit() {
     this.dataSource = new MatTableDataSource();
-    this.dataSource.paginator = this.paginator;
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -42,11 +48,13 @@ export class EventsListComponent implements AfterViewInit, OnChanges {
   getDeviceEvents() {
     this.http
       .get(environment.getDeviceEventsApiUrl, {
-        params: { deviceId: this.deviceId, date: '12/1/2019' }
+        params: { deviceId: this.deviceId, date: '12/2/2019' }
       })
       .subscribe((deviceEvents: any[]) => {
         this.dataSource = new MatTableDataSource(deviceEvents);
         this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.sort.sort({ id: 'publishedAt', start: 'desc' } as MatSortable);
       });
   }
 }
