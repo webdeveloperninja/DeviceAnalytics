@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeviceAnalytics", "DeviceAnalytics\DeviceAnalytics.csproj", "{60BA3EE0-D8D1-4294-AED3-EE6939817C46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeviceAnalyticsUnitTests", "DeviceAnalyticsUnitTests\DeviceAnalyticsUnitTests.csproj", "{8FC40CD2-A605-4DEE-A924-8B4E8CCAD043}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeviceAnalyticsUnitTests", "DeviceAnalyticsUnitTests\DeviceAnalyticsUnitTests.csproj", "{8FC40CD2-A605-4DEE-A924-8B4E8CCAD043}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

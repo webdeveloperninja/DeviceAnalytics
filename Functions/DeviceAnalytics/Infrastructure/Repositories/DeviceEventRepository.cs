@@ -12,6 +12,7 @@
 
     public class DeviceEventRepository : IDeviceEventRepository
     {
+        private const int _maxBlobResults = 500;
         private const string _eventContainerName = "device-events";
 
         private readonly CloudStorageAccount _storageAccount;
@@ -69,6 +70,36 @@
             }
 
             return new List<DeviceEvent>().AsEnumerable();
+        }
+
+        public async Task<IEnumerable<DeviceEvent>> Get(string deviceId, DateTime eventsDateTime)
+        {
+            var blobs = await GetBlobsForDevice(deviceId, eventsDateTime);
+            var orderedBlobs = blobs.OrderByDescending(blob => blob.Properties.LastModified);
+
+            var blobsContentTasks = orderedBlobs.Select(toBlobTextContent);
+
+            var blobsContent = await Task.WhenAll(blobsContentTasks);
+
+            var events = blobsContent.SelectMany(content => content.Select(blobEntry => JsonConvert.DeserializeObject<DeviceEvent>(blobEntry)));
+
+            return events;
+        }
+
+        private async Task<IEnumerable<CloudAppendBlob>> GetBlobsForDevice(string deviceId, DateTime date)
+        {
+            var blobListingDetails = new BlobListingDetails();
+            var blobRequestOptions = new BlobRequestOptions();
+            var prefix = $"{deviceId}/{date.Year}/{date.Month}/{date.Day}";
+            var blobResultSegment = await _blobContainer.ListBlobsSegmentedAsync(prefix, useFlatBlobListing: true, blobListingDetails, _maxBlobResults, null, blobRequestOptions, null);
+            return blobResultSegment.Results.Select(result => result as CloudAppendBlob);
+        }
+
+        private async Task<IEnumerable<string>> toBlobTextContent(CloudAppendBlob blob)
+        {
+            var content = await blob.DownloadTextAsync();
+
+            return content.Split(Environment.NewLine.ToCharArray()).Where(entry => !string.IsNullOrEmpty(entry));
         }
     }
 }

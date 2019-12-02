@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DeviceAnalytics": {
+      "commandName": "Project",
+      "commandLineArgs": "host start --port 7077 --pause-on-error"
+    }
+  }
+}

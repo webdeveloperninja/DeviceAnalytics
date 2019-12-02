@@ -21,6 +21,7 @@ namespace DeviceAnalytics
             builder.Services.AddMediatR(typeof(Startup).GetTypeInfo().Assembly);
             builder.Services.AddTransient<IDeviceEventRepository, DeviceEventRepository>();
             builder.Services.AddTransient<PersistDeviceEventController>();
+            builder.Services.AddTransient<GetDeviceEventsController>();
             builder.Services.AddTransient<IConfiguration, Configuration>();
 
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
