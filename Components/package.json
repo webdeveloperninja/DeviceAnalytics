@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "concurrently \"npm run build\" \"npm run start-local-server\"",
-    "build": "ng build --single-bundle",
+    "build": "ng build --prod --single-bundle",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",

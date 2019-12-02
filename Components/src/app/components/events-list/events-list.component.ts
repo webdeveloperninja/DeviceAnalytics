@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -16,7 +17,7 @@ export class EventsListComponent implements OnInit {
 
   onGetEventsClick() {
     this.http
-      .get('http://localhost:7071/api/get-device-events', {
+      .get(environment.getDeviceEventsApiUrl, {
         params: { deviceId: '20001f001247343438323536', date: '12/1/2019' }
       })
       .subscribe(d => {
