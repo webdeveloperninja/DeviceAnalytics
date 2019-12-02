@@ -26,10 +26,7 @@ export class EventsListComponent implements AfterViewInit, OnChanges {
 
   displayedColumns = ['publishedAt', 'eventName', 'data'];
 
-  constructor(
-    private readonly http: HttpClient,
-    private changeDetector: ChangeDetectorRef
-  ) {}
+  constructor(private readonly http: HttpClient) {}
 
   ngAfterViewInit() {
     this.dataSource = new MatTableDataSource();
@@ -50,8 +47,6 @@ export class EventsListComponent implements AfterViewInit, OnChanges {
       .subscribe((deviceEvents: any[]) => {
         this.dataSource = new MatTableDataSource(deviceEvents);
         this.dataSource.paginator = this.paginator;
-        // TODO figure out why this is needed
-        this.changeDetector.detectChanges();
       });
   }
 }
