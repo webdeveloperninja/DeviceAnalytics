@@ -4,10 +4,11 @@ import { createCustomElement } from '@angular/elements';
 import { AppComponent } from './app.component';
 import { EventsListComponent } from './components/events-list/events-list.component';
 import { HttpClientModule } from '@angular/common/http';
+import { ThemeModule } from './theme/theme.module';
 
 @NgModule({
   declarations: [AppComponent, EventsListComponent],
-  imports: [BrowserModule, HttpClientModule],
+  imports: [BrowserModule, HttpClientModule, ThemeModule],
   providers: [],
   bootstrap: [],
   entryComponents: [AppComponent, EventsListComponent]

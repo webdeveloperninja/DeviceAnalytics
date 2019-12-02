@@ -9,6 +9,8 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./events-list.component.scss']
 })
 export class EventsListComponent implements OnInit {
+  displayedColumns: string[] = ['publishedAt', 'eventName', 'data'];
+
   data;
 
   constructor(private readonly http: HttpClient) {}
