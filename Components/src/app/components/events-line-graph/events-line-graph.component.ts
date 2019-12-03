@@ -1,4 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  SimpleChanges,
+  OnChanges
+} from '@angular/core';
 import { Chart } from 'chart.js';
 import * as moment from 'moment';
 import { HttpClient } from '@angular/common/http';
@@ -11,7 +17,7 @@ import { DeviceEvent } from 'src/app/models/device-event.model';
   templateUrl: './events-line-graph.component.html',
   styleUrls: ['./events-line-graph.component.scss']
 })
-export class EventsLineGraphComponent implements OnInit {
+export class EventsLineGraphComponent implements OnChanges {
   chart;
   isLoading = false;
 
@@ -19,8 +25,10 @@ export class EventsLineGraphComponent implements OnInit {
 
   constructor(private readonly http: HttpClient) {}
 
-  ngOnInit() {
-    this.getDeviceEvents();
+  ngOnChanges(changes: SimpleChanges) {
+    if (!!changes.deviceId && !!this.deviceId) {
+      this.getDeviceEvents();
+    }
   }
 
   getDeviceEvents() {
