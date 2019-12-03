@@ -1,15 +1,9 @@
-import {
-  Component,
-  OnInit,
-  Input,
-  SimpleChanges,
-  OnChanges
-} from '@angular/core';
+import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { Chart } from 'chart.js';
 import * as moment from 'moment';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { finalize } from 'rxjs/operators';
+import { finalize, map } from 'rxjs/operators';
 import { DeviceEvent } from 'src/app/models/device-event.model';
 
 @Component({
@@ -36,26 +30,36 @@ export class EventsLineGraphComponent implements OnChanges {
     const now = moment.utc();
 
     this.http
-      .get(environment.getDeviceEventsApiUrl, {
+      .get<DeviceEvent[]>(environment.getDeviceEventsApiUrl, {
         params: { deviceId: this.deviceId, date: now.format() }
       })
       .pipe(
+        map(deviceEvents => {
+          return deviceEvents.map(event => {
+            return {
+              ...event,
+              publishedAt: moment(event.publishedAt)
+            };
+          });
+        }),
         finalize(() => {
           this.isLoading = false;
         })
       )
-      .subscribe((deviceEvents: DeviceEvent[]) => {
+      .subscribe(deviceEvents => {
         const data = deviceEvents.map(e => {
           return {
-            t: moment(e.publishedAt).format(),
+            t: e.publishedAt.date,
             y: +e.data
           };
         });
 
+        const labels = deviceEvents.map(d => d.publishedAt.format('LLLL'));
+
         this.chart = new Chart('canvas', {
           type: 'line',
           data: {
-            labels: [6000, 5000, 4000, 3000, 2000, 1000],
+            labels,
             datasets: [
               {
                 data,
