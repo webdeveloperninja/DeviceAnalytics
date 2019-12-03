@@ -16,6 +16,7 @@ import {
   MatSortable
 } from '@angular/material';
 import { finalize } from 'rxjs/operators';
+import * as moment from 'moment';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -49,10 +50,11 @@ export class EventsListComponent implements AfterViewInit, OnChanges {
 
   getDeviceEvents() {
     this.isLoading = true;
+    const now = moment.utc();
 
     this.http
       .get(environment.getDeviceEventsApiUrl, {
-        params: { deviceId: this.deviceId, date: '12/2/2019' }
+        params: { deviceId: this.deviceId, date: now.format() }
       })
       .pipe(
         finalize(() => {
