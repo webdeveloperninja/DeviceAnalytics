@@ -3,13 +3,12 @@
 }
 
 section {
-  min-height: 500px;
+  min-height: 320px;
   position: relative;
 
   mat-spinner {
     position: absolute;
-    top: 0;
-    bottom: 0;
+    top: 32px;
     left: 0;
     right: 0;
     margin: auto;

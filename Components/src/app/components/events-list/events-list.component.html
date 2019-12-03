@@ -1,5 +1,5 @@
 <section>
-  <mat-spinner *ngIf="isLoading"></mat-spinner>
+  <mat-spinner [diameter]="32" *ngIf="isLoading"></mat-spinner>
   <div [hidden]="isLoading">
     <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
       <ng-container matColumnDef="publishedAt">
