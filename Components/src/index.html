@@ -9,10 +9,25 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.20/angular-material.min.css">
   <link rel="stylesheet" href="https://webstoragecomponent.z22.web.core.windows.net/assets/deeppurple-amber.css">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    device-events-grid {
+      flex-basis: 420px;
+      margin-right: 16px;
+    }
+
+    device-events-line-graph {
+      width: 100%;
+    }
+
+  </style>
 </head>
 
 <body>
-  <device-events-grid device-id="20001f001247343438323536"></device-events-grid>
+  <div style="display: flex;">
+    <device-events-grid device-id="20001f001247343438323536"></device-events-grid>
+    <device-events-line-graph></device-events-line-graph>
+  </div>
+
 </body>
 
 </html>
