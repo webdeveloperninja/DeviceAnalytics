@@ -1,19 +1,24 @@
-<table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
-  <ng-container matColumnDef="publishedAt">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Published At</th>
-    <td mat-cell *matCellDef="let element"> {{element.publishedAt | date:'medium'}} </td>
-  </ng-container>
-  <ng-container matColumnDef="eventName">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Event </th>
-    <td mat-cell *matCellDef="let element"> {{element.eventName}} </td>
-  </ng-container>
-  <ng-container matColumnDef="data">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Data </th>
-    <td mat-cell *matCellDef="let element"> {{element.data}} </td>
-  </ng-container>
+<section>
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
+  <div [hidden]="isLoading">
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+      <ng-container matColumnDef="publishedAt">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Published At</th>
+        <td mat-cell *matCellDef="let element"> {{element.publishedAt | date:'medium'}} </td>
+      </ng-container>
+      <ng-container matColumnDef="eventName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Event </th>
+        <td mat-cell *matCellDef="let element"> {{element.eventName}} </td>
+      </ng-container>
+      <ng-container matColumnDef="data">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Data </th>
+        <td mat-cell *matCellDef="let element"> {{element.data}} </td>
+      </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
-<mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 50]">
-</mat-paginator>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 50]">
+    </mat-paginator>
+  </div>
+</section>
