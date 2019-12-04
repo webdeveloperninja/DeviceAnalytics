@@ -9,6 +9,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.20/angular-material.min.css">
   <link rel="stylesheet" href="https://webstoragecomponent.z22.web.core.windows.net/assets/deeppurple-amber.css">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
   <style>
     device-events-grid {
       flex-basis: 420px;
@@ -23,11 +26,32 @@
 </head>
 
 <body>
-  <div style="display: flex;">
-    <device-events-grid device-id="20001f001247343438323536"></device-events-grid>
-    <device-events-line-graph device-id="20001f001247343438323536"></device-events-line-graph>
+  <div class="container-fluid mt-3">
+    <h3 class="mb-3">All Things Sensors - Analytics Component Library</h3>
+    <div class="d-flex flex-lg-row flex-column">
+      <div class="card mr-3" style="max-width: 600px;">
+        <div class="card-body">
+          <h5 class="card-title">Device Events Component</h5>
+          <p class="card-text">
+            Add the following element to your website. <code>device-events-grid</code> with the <code>device-id</code>
+            attribute as the device id.
+          </p>
+        </div>
+        <device-events-grid device-id="20001f001247343438323536"></device-events-grid>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Device Line Graph Component</h5>
+          <p class="card-text">
+            Add the following element to your website. <code>device-events-line-graph</code> with the
+            <code>device-id</code>
+            attribute as the device id.
+          </p>
+        </div>
+        <device-events-line-graph device-id="20001f001247343438323536"></device-events-line-graph>
+      </div>
+    </div>
   </div>
-
 </body>
 
 </html>
