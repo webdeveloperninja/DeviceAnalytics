@@ -1,3 +1,20 @@
 canvas {
   width: 100%;
 }
+
+::ng-deep .mat-table {
+  width: 100%;
+}
+
+section {
+  min-height: 320px;
+  position: relative;
+
+  mat-spinner {
+    position: absolute;
+    top: 32px;
+    left: 0;
+    right: 0;
+    margin: auto;
+  }
+}
