@@ -89,9 +89,9 @@
         {
             var blobListingDetails = new BlobListingDetails();
             var blobRequestOptions = new BlobRequestOptions();
-            var prefix = $"{deviceId}/{date.Year}/{date.Month}/{date.Day}";
-            var blobResultSegment = await _blobContainer.ListBlobsSegmentedAsync(prefix, useFlatBlobListing: true, blobListingDetails, _maxBlobResults, null, blobRequestOptions, null);
-            return blobResultSegment.Results.Select(result => result as CloudAppendBlob);
+
+            var blobResultSegment = await _blobContainer.ListBlobsSegmentedAsync(prefix: deviceId, useFlatBlobListing: true, blobListingDetails, _maxBlobResults, null, blobRequestOptions, null);
+            return blobResultSegment.Results.Cast<CloudAppendBlob>();
         }
 
         private async Task<IEnumerable<DeviceEvent>> toDeviceEvents(CloudAppendBlob blob)
