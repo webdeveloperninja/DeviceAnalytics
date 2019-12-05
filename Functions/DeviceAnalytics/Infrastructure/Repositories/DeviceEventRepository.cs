@@ -55,7 +55,7 @@
                         eventsForDay.Add(eventDay, deviceEvents);
                     }
 
-                    var blobName = $"{deviceId}/{eventDay.Year}/{eventDay.Month}/{eventDay.Day}";
+                    var blobName = GetBlobName(deviceId, eventDay.Year, eventDay.Month, eventDay.Day);
 
                     var blobForDay = _blobContainer.GetAppendBlobReference(blobName);
 
@@ -72,29 +72,55 @@
             return new List<DeviceEvent>().AsEnumerable();
         }
 
-        public async Task<IEnumerable<DeviceEvent>> Get(string deviceId, DateTime eventsDateTime)
+        public async Task<IEnumerable<DeviceEvent>> Get(string deviceId, DateTime from, DateTime to)
         {
-            var blobs = await GetBlobsForDevice(deviceId, eventsDateTime);
-            var orderedBlobs = blobs.OrderByDescending(blob => blob.Properties.LastModified);
+            var deviceEvents = await GetDeviceEvents(deviceId, from, to);
 
-            var blobsContentTasks = orderedBlobs.Select(toDeviceEvents);
-            var blobsContent = await Task.WhenAll(blobsContentTasks);
+            return deviceEvents;
+        }
 
-            var events = blobsContent.SelectMany(content => content.Select(blobEntry => blobEntry));
+        private async Task<IEnumerable<DeviceEvent>> GetDeviceEvents(string deviceId, DateTime fromDate, DateTime toDate)
+        {
+            // Because we create blob based on UTC YYYY/MM/DD a query from the user based on date in their timezone 
+            // will not match 1 to 1 with the utc stored blob. Hack for now is to subtract an extra day from the from 
+            // and in the application search for the range.
+
+            var dayBeforeFromDate = fromDate.Subtract(TimeSpan.FromDays(1));
+
+            var blobs = new List<CloudAppendBlob>();
+
+            while (dayBeforeFromDate < toDate)
+            {
+                var blobForDay = await GetBlobForDay(deviceId, dayBeforeFromDate);
+                blobs.AddRange(blobForDay.Results.Cast<CloudAppendBlob>());
+
+                dayBeforeFromDate = dayBeforeFromDate.AddDays(1);
+            }
+
+            var eventsForEachDayTasks = blobs.Select(async blob => await GetEventsFromBlob(blob));
+            var eventsForEachDay = await Task.WhenAll(eventsForEachDayTasks);
+
+            var events = eventsForEachDay
+                .SelectMany(content => content.Select(blobEntry => blobEntry))
+                .OrderByDescending(e => e.PublishedAt)
+                .Where(e => e.PublishedAt >= fromDate);
 
             return events;
         }
 
-        private async Task<IEnumerable<CloudAppendBlob>> GetBlobsForDevice(string deviceId, DateTime date)
+        private async Task<BlobResultSegment> GetBlobForDay(string deviceId, DateTime dateTime)
         {
             var blobListingDetails = new BlobListingDetails();
             var blobRequestOptions = new BlobRequestOptions();
 
-            var blobResultSegment = await _blobContainer.ListBlobsSegmentedAsync(prefix: deviceId, useFlatBlobListing: true, blobListingDetails, _maxBlobResults, null, blobRequestOptions, null);
-            return blobResultSegment.Results.Cast<CloudAppendBlob>();
+            var blobName = GetBlobName(deviceId, dateTime.Year, dateTime.Month, dateTime.Day);
+
+            var blobResultSegment = await _blobContainer.ListBlobsSegmentedAsync(prefix: blobName, useFlatBlobListing: true, blobListingDetails, _maxBlobResults, null, blobRequestOptions, null);
+
+            return blobResultSegment;
         }
 
-        private async Task<IEnumerable<DeviceEvent>> toDeviceEvents(CloudAppendBlob blob)
+        private async Task<IEnumerable<DeviceEvent>> GetEventsFromBlob(CloudAppendBlob blob)
         {
             var content = await blob.DownloadTextAsync();
 
@@ -102,6 +128,10 @@
             var deviceEvents = blobEntries.Select(b => JsonConvert.DeserializeObject<DeviceEvent>(b));
 
             return deviceEvents;
+        }
+        private string GetBlobName(string deviceId, int year, int month, int day)
+        {
+            return $"{deviceId}/{year}/{month}/{day}";
         }
     }
 }

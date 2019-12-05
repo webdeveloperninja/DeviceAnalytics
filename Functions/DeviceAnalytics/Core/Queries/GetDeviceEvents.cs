@@ -11,7 +11,9 @@
     {
         public string DeviceId;
 
-        public DateTime eventsDate;
+        public DateTime fromDate;
+
+        public DateTime toDate;
     }
 
     public class GetDeviceEvents : IRequestHandler<GetDeviceEventsRequest, IEnumerable<DeviceEvent>>
@@ -25,7 +27,7 @@
 
         public Task<IEnumerable<DeviceEvent>> Handle(GetDeviceEventsRequest request, CancellationToken cancellationToken)
         {
-            return _eventRepository.Get(request.DeviceId, request.eventsDate);
+            return _eventRepository.Get(request.DeviceId, request.fromDate, request.toDate);
         }
     }
 }

@@ -23,14 +23,14 @@ namespace DeviceAnalytics
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-
             var deviceId = req.Query["deviceId"];
-            var eventsDateInput = req.Query["date"];
+            var fromDateInput = req.Query["from"];
+            var toDateInput = req.Query["to"];
 
-            var eventsDate = DateTime.Parse(eventsDateInput);
+            var fromDate = DateTime.Parse(fromDateInput);
+            var toDate = DateTime.Parse(toDateInput);
 
-            var results = await _getDeviceEventsController.Execute(deviceId, eventsDate);
+            var results = await _getDeviceEventsController.Execute(deviceId, fromDate, toDate);
 
             return new OkObjectResult(results);
         }

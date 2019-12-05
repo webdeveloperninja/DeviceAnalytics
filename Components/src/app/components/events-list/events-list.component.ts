@@ -50,11 +50,18 @@ export class EventsListComponent implements AfterViewInit, OnChanges {
 
   getDeviceEvents() {
     this.isLoading = true;
-    const now = moment.utc();
+    const now = moment().endOf('day');
+    const yesterday = moment()
+      .subtract(5, 'd')
+      .startOf('day');
 
     this.http
       .get(environment.getDeviceEventsApiUrl, {
-        params: { deviceId: this.deviceId, date: now.format() }
+        params: {
+          deviceId: this.deviceId,
+          from: yesterday.toISOString(),
+          to: now.toISOString()
+        }
       })
       .pipe(
         finalize(() => {

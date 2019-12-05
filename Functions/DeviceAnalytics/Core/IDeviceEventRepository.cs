@@ -8,6 +8,6 @@
     public interface IDeviceEventRepository
     {
         Task<IEnumerable<DeviceEvent>> Add(IEnumerable<DeviceEvent> eventsToAdd);
-        Task<IEnumerable<DeviceEvent>> Get(string deviceId, DateTime eventsDateTime);
+        Task<IEnumerable<DeviceEvent>> Get(string deviceId, DateTime from, DateTime to);
     }
 }

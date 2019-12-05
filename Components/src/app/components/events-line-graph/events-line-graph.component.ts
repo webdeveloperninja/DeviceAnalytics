@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { finalize, map } from 'rxjs/operators';
 import { DeviceEvent } from 'src/app/models/device-event.model';
+import * as _ from 'underscore';
 
 @Component({
   selector: 'app-events-line-graph',
@@ -27,11 +28,17 @@ export class EventsLineGraphComponent implements OnChanges {
 
   getDeviceEvents() {
     this.isLoading = true;
-    const now = moment.utc();
+    const now = moment().endOf('day');
+    const yesterday = moment().startOf('day');
 
+    console.log(yesterday);
     this.http
       .get<DeviceEvent[]>(environment.getDeviceEventsApiUrl, {
-        params: { deviceId: this.deviceId, date: now.format() }
+        params: {
+          deviceId: this.deviceId,
+          from: yesterday.toISOString(),
+          to: now.toISOString()
+        }
       })
       .pipe(
         map(deviceEvents => {
@@ -47,14 +54,17 @@ export class EventsLineGraphComponent implements OnChanges {
         })
       )
       .subscribe(deviceEvents => {
-        const data = deviceEvents.map(e => {
+        const events = deviceEvents.sort((left, right) =>
+          left.publishedAt.diff(right.publishedAt)
+        );
+        const data = events.map(e => {
           return {
             t: e.publishedAt.date,
             y: +e.data
           };
         });
 
-        const labels = deviceEvents.map(d => d.publishedAt.format('LLLL'));
+        const labels = events.map(d => d.publishedAt.format('LLLL'));
 
         this.chart = new Chart('canvas', {
           type: 'line',

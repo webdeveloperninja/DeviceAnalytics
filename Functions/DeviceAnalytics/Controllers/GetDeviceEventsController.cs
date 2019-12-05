@@ -16,12 +16,13 @@
             _mediator = mediator;
         }
 
-        public async Task<IEnumerable<DeviceEvent>> Execute(string deviceId, DateTime eventsDate)
+        public async Task<IEnumerable<DeviceEvent>> Execute(string deviceId, DateTime fromDate, DateTime toDate)
         {
             var request = new GetDeviceEventsRequest
             {
                 DeviceId = deviceId,
-                eventsDate = eventsDate
+                fromDate = fromDate,
+                toDate = toDate
             };
 
             var results = await _mediator.Send(request);
