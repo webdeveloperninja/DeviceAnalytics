@@ -11,7 +11,8 @@ import {
   MatPaginator,
   MatSort,
   MatTable,
-  MatTableDataSource
+  MatTableDataSource,
+  MatSortable
 } from '@angular/material';
 import { Observable, Subject } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
@@ -53,6 +54,7 @@ export class EventsListComponent
             this.dataSource = new MatTableDataSource(events.events);
             this.dataSource.paginator = this.paginator;
             this.dataSource.sort = this.sort;
+            this.sort.sort({ id: 'publishedAt', start: 'desc' } as MatSortable);
           })
         )
         .subscribe();

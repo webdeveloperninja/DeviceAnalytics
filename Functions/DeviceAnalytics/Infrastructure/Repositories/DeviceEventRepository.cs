@@ -102,7 +102,7 @@
 
             var events = eventsForEachDay
                 .SelectMany(content => content.Select(blobEntry => blobEntry))
-                .OrderByDescending(e => e.PublishedAt)
+                .OrderBy(e => e.PublishedAt)
                 .Where(e => e.PublishedAt >= fromDate);
 
             return events;
