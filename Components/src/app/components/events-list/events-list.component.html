@@ -1,6 +1,6 @@
 <section>
-  <mat-spinner [diameter]="32" *ngIf="isLoading"></mat-spinner>
-  <div [hidden]="isLoading">
+  <mat-spinner [diameter]="32" *ngIf="isLoading$ | async"></mat-spinner>
+  <div [hidden]="isLoading$ | async">
     <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
       <ng-container matColumnDef="publishedAt">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Published At</th>

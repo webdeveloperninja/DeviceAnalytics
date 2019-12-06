@@ -1,11 +1,9 @@
-import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Chart } from 'chart.js';
+import { filter, tap } from 'rxjs/operators';
+import { DeviceEventsQuery } from 'src/app/state/device-events/device-events.query';
+import { DeviceEvent } from 'src/app/state/device-events/models/device-event.model';
 import * as moment from 'moment';
-import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-import { finalize, map } from 'rxjs/operators';
-import { DeviceEvent } from 'src/app/models/device-event.model';
-import * as _ from 'underscore';
 
 @Component({
   selector: 'app-events-line-graph',
@@ -15,77 +13,55 @@ import * as _ from 'underscore';
 export class EventsLineGraphComponent implements OnChanges {
   chart;
   isLoading = false;
+  isLoading$ = this.deviceEventsQuery.selectLoading();
 
   @Input() deviceId;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly deviceEventsQuery: DeviceEventsQuery) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (!!changes.deviceId && !!this.deviceId) {
-      this.getDeviceEvents();
+      this.deviceEventsQuery
+        .selectEntity(this.deviceId)
+        .pipe(
+          filter(events => !!events),
+          tap(summary => {
+            this.renderGraph(summary.events);
+          })
+        )
+        .subscribe();
     }
   }
 
-  getDeviceEvents() {
-    this.isLoading = true;
-    const now = moment().endOf('day');
-    const yesterday = moment().startOf('day');
+  private renderGraph(deviceEvents: DeviceEvent[]) {
+    const data = deviceEvents.map(e => {
+      return {
+        t: e.publishedAt.date,
+        y: +e.data
+      };
+    });
 
-    console.log(yesterday);
-    this.http
-      .get<DeviceEvent[]>(environment.getDeviceEventsApiUrl, {
-        params: {
-          deviceId: this.deviceId,
-          from: yesterday.toISOString(),
-          to: now.toISOString()
-        }
-      })
-      .pipe(
-        map(deviceEvents => {
-          return deviceEvents.map(event => {
-            return {
-              ...event,
-              publishedAt: moment(event.publishedAt)
-            };
-          });
-        }),
-        finalize(() => {
-          this.isLoading = false;
-        })
-      )
-      .subscribe(deviceEvents => {
-        const events = deviceEvents.sort((left, right) =>
-          left.publishedAt.diff(right.publishedAt)
-        );
-        const data = events.map(e => {
-          return {
-            t: e.publishedAt.date,
-            y: +e.data
-          };
-        });
+    const labels = deviceEvents.map(d => d.publishedAt.format('LLLL'));
 
-        const labels = events.map(d => d.publishedAt.format('LLLL'));
-
-        this.chart = new Chart('canvas', {
-          type: 'line',
-          data: {
-            labels,
-            datasets: [
-              {
-                data,
-                label: 'A0',
-                borderColor: '#3e95cd',
-                fill: false
-              }
-            ]
-          },
-          options: {
-            title: {
-              display: true,
-              text: 'Sensor Voltage (in mV)'
-            }
+    this.chart = new Chart('canvas', {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            data,
+            label: 'A0',
+            borderColor: '#3e95cd',
+            fill: false
           }
-        });
-      });
+        ]
+      },
+      options: {
+        title: {
+          display: true,
+          text: 'Sensor Voltage (in mV)'
+        }
+      }
+    });
   }
 }

@@ -8,18 +8,34 @@ import { ThemeModule } from './theme/theme.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
 import { EventsLineGraphComponent } from './components/events-line-graph/events-line-graph.component';
+import { EventsSearchComponent } from './components/events-search/events-search.component';
+import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
+import { environment } from '../environments/environment';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [AppComponent, EventsListComponent, EventsLineGraphComponent],
+  declarations: [
+    AppComponent,
+    EventsListComponent,
+    EventsLineGraphComponent,
+    EventsSearchComponent
+  ],
   imports: [
     BrowserModule,
     HttpClientModule,
     ThemeModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    environment.production ? [] : AkitaNgDevtools.forRoot(),
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [],
-  entryComponents: [AppComponent, EventsListComponent, EventsLineGraphComponent]
+  entryComponents: [
+    AppComponent,
+    EventsListComponent,
+    EventsLineGraphComponent,
+    EventsSearchComponent
+  ]
 })
 export class AppModule implements DoBootstrap {
   constructor(private readonly injector: Injector) {}
@@ -31,6 +47,10 @@ export class AppModule implements DoBootstrap {
     );
     const eventsLineGraphstrategyFactory = new ElementZoneStrategyFactory(
       EventsLineGraphComponent,
+      this.injector
+    );
+    const eventsSearchstrategyFactory = new ElementZoneStrategyFactory(
+      EventsSearchComponent,
       this.injector
     );
 
@@ -47,11 +67,21 @@ export class AppModule implements DoBootstrap {
       }
     );
 
+    const deviceEventsSearchElement = createCustomElement(
+      EventsSearchComponent,
+      {
+        injector: this.injector,
+        strategyFactory: eventsSearchstrategyFactory
+      }
+    );
+
     customElements.define('device-events-grid', deviceEventsListElement);
 
     customElements.define(
       'device-events-line-graph',
       deviceEventsLineGraphElement
     );
+
+    customElements.define('device-events-search', deviceEventsSearchElement);
   }
 }

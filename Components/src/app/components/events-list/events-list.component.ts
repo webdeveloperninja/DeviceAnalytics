@@ -1,22 +1,22 @@
 import {
+  AfterViewInit,
   Component,
   Input,
-  ViewChild,
-  AfterViewInit,
   OnChanges,
-  SimpleChanges
+  OnDestroy,
+  SimpleChanges,
+  ViewChild
 } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
 import {
   MatPaginator,
-  MatTableDataSource,
-  MatTable,
   MatSort,
-  MatSortable
+  MatTable,
+  MatTableDataSource
 } from '@angular/material';
-import { finalize } from 'rxjs/operators';
-import * as moment from 'moment';
+import { Observable, Subject } from 'rxjs';
+import { filter, tap } from 'rxjs/operators';
+import { DeviceEvent } from 'src/app/state/device-events/models/device-event.model';
+import { DeviceEventsQuery } from '../../state/device-events/device-events.query';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -24,55 +24,46 @@ import * as moment from 'moment';
   templateUrl: './events-list.component.html',
   styleUrls: ['./events-list.component.scss']
 })
-export class EventsListComponent implements AfterViewInit, OnChanges {
+export class EventsListComponent
+  implements AfterViewInit, OnChanges, OnDestroy {
   @Input() deviceId;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
   @ViewChild(MatTable, { static: false }) table: MatTable<any>;
   @ViewChild(MatSort, { static: false }) sort: MatSort;
 
-  isLoading = false;
+  hasCache$ = this.deviceEventsQuery.selectHasCache();
+
+  deviceEvents$: Observable<DeviceEvent[]>;
+  isLoading$ = this.deviceEventsQuery.selectLoading();
 
   dataSource: MatTableDataSource<any>;
-
   displayedColumns = ['publishedAt', 'eventName', 'data'];
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly deviceEventsQuery: DeviceEventsQuery) {}
+
+  private readonly onDestroy$ = new Subject();
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (!!changes.deviceId && !!this.deviceId) {
+      this.deviceEventsQuery
+        .selectEntity(this.deviceId)
+        .pipe(
+          filter(events => !!events),
+          tap(events => {
+            this.dataSource = new MatTableDataSource(events.events);
+            this.dataSource.paginator = this.paginator;
+            this.dataSource.sort = this.sort;
+          })
+        )
+        .subscribe();
+    }
+  }
 
   ngAfterViewInit() {
     this.dataSource = new MatTableDataSource();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (!!changes.deviceId && !!this.deviceId) {
-      this.getDeviceEvents();
-    }
-  }
-
-  getDeviceEvents() {
-    this.isLoading = true;
-    const now = moment().endOf('day');
-    const yesterday = moment()
-      .subtract(5, 'd')
-      .startOf('day');
-
-    this.http
-      .get(environment.getDeviceEventsApiUrl, {
-        params: {
-          deviceId: this.deviceId,
-          from: yesterday.toISOString(),
-          to: now.toISOString()
-        }
-      })
-      .pipe(
-        finalize(() => {
-          this.isLoading = false;
-        })
-      )
-      .subscribe((deviceEvents: any[]) => {
-        this.dataSource = new MatTableDataSource(deviceEvents);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        this.sort.sort({ id: 'publishedAt', start: 'desc' } as MatSortable);
-      });
+  ngOnDestroy() {
+    this.onDestroy$.next();
   }
 }
