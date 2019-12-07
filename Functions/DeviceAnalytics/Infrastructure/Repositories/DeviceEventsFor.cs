@@ -4,18 +4,18 @@
     using System;
     using System.Collections.Generic;
 
-    public class DeviceEventsForDay
+    public class DeviceEventsFor
     {
         public readonly string DeviceId;
 
-        public readonly DateTime EventsForDay;
+        public readonly DateTime Date;
 
         public readonly IEnumerable<DeviceEvent> Events;
 
-        public DeviceEventsForDay(string deviceId, DateTime date, IEnumerable<DeviceEvent> events)
+        public DeviceEventsFor(string deviceId, DateTime date, IEnumerable<DeviceEvent> events)
         {
             DeviceId = deviceId;
-            EventsForDay = date;
+            Date = date;
             Events = events;
         }
     }

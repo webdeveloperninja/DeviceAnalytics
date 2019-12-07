@@ -14,7 +14,7 @@
             _events = events;
         }
 
-        public IEnumerable<DeviceEventsForDay> Collect()
+        public IEnumerable<DeviceEventsFor> Collect()
         {
             var eventsForDevice = _events
                 .GroupBy(e => e.DeviceId);
@@ -26,8 +26,9 @@
                 {
                     // TODO: Figure out a better way to get device id here
                     var deviceId = deviceEventsForDay.First().DeviceId;
+                    var day = new DateTime(deviceEventsForDay.Key.Year, deviceEventsForDay.Key.Month, deviceEventsForDay.Key.Day);
 
-                    return new DeviceEventsForDay(deviceId, new DateTime(deviceEventsForDay.Key.Year, deviceEventsForDay.Key.Month, deviceEventsForDay.Key.Day), deviceEventsForDay);
+                    return new DeviceEventsFor(deviceId, day, deviceEventsForDay);
                 });
         }
     }

@@ -107,8 +107,8 @@
 
             var deviceEventsPerDay = sut.Collect();
 
-            Assert.IsTrue(deviceEventsPerDay.First(e => e.EventsForDay == dayOne).Events.SequenceEqual(eventsForDayOne, _deviceEventComparer));
-            Assert.IsTrue(deviceEventsPerDay.First(e => e.EventsForDay == dayTwo).Events.SequenceEqual(eventsForDayTwo, _deviceEventComparer));
+            Assert.IsTrue(deviceEventsPerDay.First(e => e.Date == dayOne).Events.SequenceEqual(eventsForDayOne, _deviceEventComparer));
+            Assert.IsTrue(deviceEventsPerDay.First(e => e.Date == dayTwo).Events.SequenceEqual(eventsForDayTwo, _deviceEventComparer));
         }
     }
 }

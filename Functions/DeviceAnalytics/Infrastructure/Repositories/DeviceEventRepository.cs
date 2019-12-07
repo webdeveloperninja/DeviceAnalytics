@@ -34,7 +34,7 @@
             foreach (var eventsForDay in deviceEventsForDay)
             {
                 var blobName =
-                    GetBlobName(eventsForDay.DeviceId, eventsForDay.EventsForDay);
+                    GetBlobName(eventsForDay.DeviceId, eventsForDay.Date);
 
                 var blobForDay = _blobContainer.GetAppendBlobReference(blobName);
 
