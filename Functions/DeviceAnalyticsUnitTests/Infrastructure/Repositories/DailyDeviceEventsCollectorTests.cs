@@ -62,5 +62,53 @@
             Assert.IsTrue(deviceEventsPerDay.First(e => e.DeviceId == deviceOneId).Events.SequenceEqual(eventsForDeviceOne, _deviceEventComparer));
             Assert.IsTrue(deviceEventsPerDay.First(e => e.DeviceId == deviceTwoId).Events.SequenceEqual(eventsForDeviceTwo, _deviceEventComparer));
         }
+
+        [TestMethod]
+        public void ShouldGroupEventsPerDay_GivenListOfDeviceEvents()
+        {
+            var deviceOneId = "20001f001247343438323536";
+            var dayOne = new System.DateTime(2020, 5, 1);
+            var dayTwo = new System.DateTime(2020, 5, 2);
+
+            var eventsForDayOne = new List<DeviceEvent>()
+            {
+                new DeviceEvent
+                {
+                    DeviceId = deviceOneId,
+                    Data = 4343,
+                    EventName = "a0",
+                    PublishedAt = dayOne
+                },
+                new DeviceEvent
+                {
+                    DeviceId = deviceOneId,
+                    Data = 4343,
+                    EventName = "a0",
+                    PublishedAt = dayOne
+                }
+            };
+
+            var eventsForDayTwo = new List<DeviceEvent>()
+            {
+                new DeviceEvent
+                {
+                    DeviceId = deviceOneId,
+                    Data = 4343,
+                    EventName = "a0",
+                    PublishedAt = dayTwo
+                }
+            };
+
+            var mockEvents = new List<DeviceEvent>();
+            mockEvents.AddRange(eventsForDayOne);
+            mockEvents.AddRange(eventsForDayTwo);
+
+            var sut = new DeviceEventsCollector(mockEvents);
+
+            var deviceEventsPerDay = sut.Collect();
+
+            Assert.IsTrue(deviceEventsPerDay.First(e => e.EventsForDay == dayOne).Events.SequenceEqual(eventsForDayOne, _deviceEventComparer));
+            Assert.IsTrue(deviceEventsPerDay.First(e => e.EventsForDay == dayTwo).Events.SequenceEqual(eventsForDayTwo, _deviceEventComparer));
+        }
     }
 }
