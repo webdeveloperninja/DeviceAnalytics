@@ -4,6 +4,7 @@
     using DeviceAnalytics.Controllers.Contracts;
     using DeviceAnalytics.Core.Commands;
     using DeviceAnalytics.Core.Entities;
+    using DeviceAnalyticsUnitTests.Comparers;
     using MediatR;
     using Microsoft.Azure.EventHubs;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -75,21 +76,5 @@
         {
             return deviceEvent.Events.SequenceEqual(toCompare.Events, _deviceEventComparer);
         }
-    }
-
-    public class DeviceEventComparer : EqualityComparer<DeviceEvent>
-    {
-        public override bool Equals(DeviceEvent deviceEvent, DeviceEvent toCompare)
-        {
-            if (object.ReferenceEquals(deviceEvent, toCompare))
-                return true;
-
-            if (deviceEvent is null || toCompare is null)
-                return false;
-
-            return deviceEvent.Data == toCompare.Data && deviceEvent.DeviceId == toCompare.DeviceId && deviceEvent.EventName == toCompare.EventName && deviceEvent.PublishedAt == toCompare.PublishedAt;
-        }
-
-        public override int GetHashCode(DeviceEvent deviceEvent) => deviceEvent.GetHashCode();
     }
 }
