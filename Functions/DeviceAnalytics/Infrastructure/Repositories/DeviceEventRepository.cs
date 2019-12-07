@@ -28,48 +28,29 @@
 
         public async Task<IEnumerable<DeviceEvent>> Add(IEnumerable<DeviceEvent> eventsToAdd)
         {
-            var deviceIds = eventsToAdd.Select(e => e.DeviceId).Distinct();
-            var eventsForDay = new Dictionary<DateTime, List<DeviceEvent>>();
-            var blobsForDevice = new Dictionary<string, Dictionary<DateTime, List<DeviceEvent>>>();
+            var deviceEventsCollector = new DeviceEventsCollector(eventsToAdd);
+            var deviceEventsForDay = deviceEventsCollector.Collect();
 
-            foreach (string deviceId in deviceIds)
+            foreach (var eventsForDay in deviceEventsForDay)
             {
-                var eventsForDevice = eventsToAdd.Where(e => e.DeviceId == deviceId);
-                foreach (DeviceEvent deviceEvent in eventsForDevice)
+                var blobName =
+                    GetBlobName(eventsForDay.DeviceId, eventsForDay.EventsForDay);
+
+                var blobForDay = _blobContainer.GetAppendBlobReference(blobName);
+
+                var blobExists = await blobForDay.ExistsAsync();
+                if (!blobExists) await blobForDay.CreateOrReplaceAsync();
+
+                foreach (var deviceEvent in eventsForDay.Events)
                 {
-                    var eventDay = new DateTime(deviceEvent.PublishedAt.Year, deviceEvent.PublishedAt.Month, deviceEvent.PublishedAt.Day);
+                    // TODO: Figure out how to batch append blobs. 
+                    // Currently a batch append will always stay on the latest line
 
-                    eventsForDay.TryGetValue(eventDay, out var deviceEvents);
-
-                    if (deviceEvents == null)
-                    {
-                        var newEvents = new List<DeviceEvent>();
-                        newEvents.Add(deviceEvent);
-
-                        eventsForDay.Add(eventDay, newEvents);
-                    }
-                    else
-                    {
-                        deviceEvents.Add(deviceEvent);
-
-                        eventsForDay.Add(eventDay, deviceEvents);
-                    }
-
-                    var blobName = GetBlobName(deviceId, eventDay.Year, eventDay.Month, eventDay.Day);
-
-                    var blobForDay = _blobContainer.GetAppendBlobReference(blobName);
-
-                    var blobExists = await blobForDay.ExistsAsync();
-                    if (!blobExists) await blobForDay.CreateOrReplaceAsync();
-
-                    foreach (var e in eventsToAdd)
-                    {
-                        await blobForDay.AppendTextAsync(JsonConvert.SerializeObject(e) + Environment.NewLine);
-                    }
+                    await blobForDay.AppendTextAsync(JsonConvert.SerializeObject(deviceEvent) + Environment.NewLine);
                 }
             }
 
-            return new List<DeviceEvent>().AsEnumerable();
+            return eventsToAdd;
         }
 
         public async Task<IEnumerable<DeviceEvent>> Get(string deviceId, DateTime from, DateTime to)
@@ -103,7 +84,7 @@
             var events = eventsForEachDay
                 .SelectMany(content => content.Select(blobEntry => blobEntry))
                 .OrderBy(e => e.PublishedAt)
-                .Where(e => e.PublishedAt >= fromDate);
+                .Where(e => e.PublishedAt >= fromDate.ToUniversalTime());
 
             return events;
         }
@@ -113,7 +94,7 @@
             var blobListingDetails = new BlobListingDetails();
             var blobRequestOptions = new BlobRequestOptions();
 
-            var blobName = GetBlobName(deviceId, dateTime.Year, dateTime.Month, dateTime.Day);
+            var blobName = GetBlobName(deviceId, dateTime);
 
             var blobResultSegment = await _blobContainer.ListBlobsSegmentedAsync(prefix: blobName, useFlatBlobListing: true, blobListingDetails, _maxBlobResults, null, blobRequestOptions, null);
 
@@ -125,13 +106,13 @@
             var content = await blob.DownloadTextAsync();
 
             var blobEntries = content.Split(Environment.NewLine.ToCharArray()).Where(entry => !string.IsNullOrEmpty(entry));
-            var deviceEvents = blobEntries.Select(b => JsonConvert.DeserializeObject<DeviceEvent>(b));
+            var deviceEvents = blobEntries.Where(b => !string.IsNullOrEmpty(b)).Select(b => JsonConvert.DeserializeObject<DeviceEvent>(b));
 
             return deviceEvents;
         }
-        private string GetBlobName(string deviceId, int year, int month, int day)
+        private string GetBlobName(string deviceId, DateTime date)
         {
-            return $"{deviceId}/{year}/{month}/{day}";
+            return $"{deviceId}/{date.Year}/{date.Month}/{date.Day}";
         }
     }
 }

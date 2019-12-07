@@ -15,7 +15,7 @@ namespace DeviceAnalytics
         }
 
         [FunctionName("persist-device-event")]
-        public void Run([EventHubTrigger("allthingssensorshub", ConsumerGroup = "device-analytics", Connection = "eventHubConnection")] EventData[] events, ILogger log)
+        public void Run([EventHubTrigger("allthingssensorshub", ConsumerGroup = "local-device-analytics", Connection = "eventHubConnection")] EventData[] events, ILogger log)
         {
             _persistEventController.Execute(events);
         }
