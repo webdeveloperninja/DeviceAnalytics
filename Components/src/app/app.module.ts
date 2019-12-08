@@ -1,7 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, DoBootstrap, Injector } from '@angular/core';
 import { createCustomElement } from '@angular/elements';
-import { AppComponent } from './app.component';
 import { EventsListComponent } from './components/events-list/events-list.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ThemeModule } from './theme/theme.module';
@@ -15,7 +14,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
-    AppComponent,
     EventsListComponent,
     EventsLineGraphComponent,
     EventsSearchComponent
@@ -31,7 +29,6 @@ import { ReactiveFormsModule } from '@angular/forms';
   providers: [],
   bootstrap: [],
   entryComponents: [
-    AppComponent,
     EventsListComponent,
     EventsLineGraphComponent,
     EventsSearchComponent

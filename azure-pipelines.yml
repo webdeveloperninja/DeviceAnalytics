@@ -1,17 +1,23 @@
 steps:
   - task: Npm@1
-    displayName: "npm install"
+    displayName: "npm install Components"
     inputs:
       command: install
       workingDir: "$(Build.SourcesDirectory)/Components"
   - task: Npm@1
-    displayName: "npm test"
+    displayName: "npm lint Components"
+    inputs:
+      command: custom
+      customCommand: run lint
+      workingDir: "$(Build.SourcesDirectory)/Components"
+  - task: Npm@1
+    displayName: "npm test Components"
     inputs:
       command: custom
       customCommand: run test-headless
       workingDir: "$(Build.SourcesDirectory)/Components"
   - task: Npm@1
-    displayName: "Build Angular"
+    displayName: "build Components"
     inputs:
       command: custom
       customCommand: run build
@@ -23,7 +29,7 @@ steps:
       contents: "**"
       targetFolder: "$(Build.ArtifactStagingDirectory)/Components"
   - task: CopyFiles@2
-    displayName: "copy infrastructure to artifact staging directory"
+    displayName: "copy Infrastructure to artifact staging directory"
     inputs:
       sourceFolder: "$(Build.SourcesDirectory)/Infrastructure"
       contents: "**"
