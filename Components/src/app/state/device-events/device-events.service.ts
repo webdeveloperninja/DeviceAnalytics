@@ -6,7 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { throwError } from 'rxjs';
 import { DeviceEventsStore } from './device-events.store';
 import * as moment from 'moment';
-import { DeviceSummary } from './models/device-summary.model';
+import { DeviceEventsSummary } from './models/device-events-summary.model';
 import { DeviceEvent } from './models/device-event.model';
 
 export const getDeviceEventsErrorMessage =
@@ -44,7 +44,7 @@ export class DeviceEventsService {
           });
         }),
         tap(events => {
-          const summary: DeviceSummary = {
+          const summary: DeviceEventsSummary = {
             events
           };
 

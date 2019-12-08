@@ -1,5 +1,5 @@
 import { DeviceEvent } from './device-event.model';
 
-export class DeviceSummary {
+export class DeviceEventsSummary {
   events: DeviceEvent[];
 }
