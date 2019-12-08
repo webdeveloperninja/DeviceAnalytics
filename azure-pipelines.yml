@@ -5,6 +5,12 @@ steps:
       command: install
       workingDir: "$(Build.SourcesDirectory)/Components"
   - task: Npm@1
+    displayName: "npm test"
+    inputs:
+      command: custom
+      customCommand: run test-headless
+      workingDir: "$(Build.SourcesDirectory)/Components"
+  - task: Npm@1
     displayName: "Build Angular"
     inputs:
       command: custom

@@ -6,6 +6,7 @@
     "start": "concurrently \"npm run build\" \"npm run start-local-server\"",
     "build": "ng build --prod --output-hashing=none --single-bundle",
     "test": "ng test",
+    "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "start-local-server": "http-server ./dist/components"

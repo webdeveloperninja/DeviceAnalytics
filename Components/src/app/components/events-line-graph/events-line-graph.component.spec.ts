@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EventsLineGraphComponent } from './events-line-graph.component';
+import { ThemeModule } from 'src/app/theme/theme.module';
 
 describe('EventsLineGraphComponent', () => {
   let component: EventsLineGraphComponent;
@@ -8,9 +9,9 @@ describe('EventsLineGraphComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EventsLineGraphComponent ]
-    })
-    .compileComponents();
+      imports: [ThemeModule],
+      declarations: [EventsLineGraphComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {
