@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  getDeviceEventsApiUrl: 'http://localhost:7077/api/get-device-events'
+  getDeviceEventsApiUrl:
+    'https://deviceanalyticsprocessor.azurewebsites.net/api/get-device-events?code=4DMWgMV/B1ghkcJrXb6sE/7KxZ1HZViCbcNoIIaOvnG17wS0sM78jg=='
 };
 
 /*

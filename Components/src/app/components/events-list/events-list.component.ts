@@ -18,6 +18,7 @@ import { Observable, Subject } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
 import { DeviceEvent } from 'src/app/state/device-events/models/device-event.model';
 import { DeviceEventsQuery } from '../../state/device-events/device-events.query';
+import { NgxAdalService } from 'ngx-adal-8';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -40,9 +41,16 @@ export class EventsListComponent
   dataSource: MatTableDataSource<any>;
   displayedColumns = ['publishedAt', 'eventName', 'data'];
 
-  constructor(private readonly deviceEventsQuery: DeviceEventsQuery) {}
+  constructor(
+    private readonly deviceEventsQuery: DeviceEventsQuery,
+    private readonly adalAuthService: NgxAdalService
+  ) {}
 
   private readonly onDestroy$ = new Subject();
+
+  get isAuthenticated() {
+    return this.adalAuthService.isAuthenticated;
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (!!changes.deviceId && !!this.deviceId) {

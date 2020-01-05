@@ -11,6 +11,7 @@ import { EventsSearchComponent } from './components/events-search/events-search.
 import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
 import { environment } from '../environments/environment';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgxAdalModule } from 'ngx-adal-8';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,14 @@ import { ReactiveFormsModule } from '@angular/forms';
     ThemeModule,
     BrowserAnimationsModule,
     environment.production ? [] : AkitaNgDevtools.forRoot(),
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgxAdalModule.forRoot({
+      tenant: `0fb4e1c8-d01f-4721-9341-f78ef1418a32`,
+      clientId: `e764c5a2-0bf8-4011-a9ef-f475f7fe80f1`,
+      redirectUri: `frameRedirect.html`,
+      postLogoutRedirectUri: `frameRedirect.html`,
+      cacheLocation: 'sessionStorage'
+    })
   ],
   providers: [],
   bootstrap: [],
