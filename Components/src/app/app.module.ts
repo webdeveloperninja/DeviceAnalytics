@@ -12,12 +12,16 @@ import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
 import { environment } from '../environments/environment';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgxAdalModule } from 'ngx-adal-8';
+import { AppShowIfLoggedInDirective } from './core/directives/show-if-logged-in.directive';
+import { LoggedOutComponent } from './components/logged-out/logged-out.component';
 
 @NgModule({
   declarations: [
     EventsListComponent,
     EventsLineGraphComponent,
-    EventsSearchComponent
+    EventsSearchComponent,
+    AppShowIfLoggedInDirective,
+    LoggedOutComponent
   ],
   imports: [
     BrowserModule,
@@ -39,7 +43,8 @@ import { NgxAdalModule } from 'ngx-adal-8';
   entryComponents: [
     EventsListComponent,
     EventsLineGraphComponent,
-    EventsSearchComponent
+    EventsSearchComponent,
+    LoggedOutComponent
   ]
 })
 export class AppModule implements DoBootstrap {
