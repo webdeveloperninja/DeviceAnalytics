@@ -11,7 +11,6 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-
   <style>
     device-events-grid {
       flex-basis: 420px;
@@ -23,23 +22,17 @@
     }
 
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/zone.js/0.9.1/zone.min.js"></script>
+  <script src="https://auth.allthingssensors.com/main-es5.js"></script>
 
   <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.17/js/adal.min.js"></script>
 </head>
 
 <body>
-  <div id="like_button_container"></div>
-
   <div class="container-fluid mt-3">
-    <header class="d-flex justify-content-between">
-      <h3 class="mb-3">All Things Sensors - Analytics Web Component Library</h3>
-      <div>
-        <a href="https://app.allthingssensors.com" target="_blank" class="btn btn-primary btn-sm">Remote Monitoring
-          App</a>
-      </div>
-    </header>
-    <div class="card mb-3">
-      <h5 class="card-header">We are a Web Component first company</h5>
+    <ats-login></ats-login>
+    <div class="card mb-3 mt-3">
+      <h5 class="card-header">All Things Sensors - Analytics Web Component Library</h5>
       <div class="card-body">
         <h5 class="card-title">Usage</h5>
         <p class="card-text">Add the script to your website. Choose either ES2015 version or ES5 depending on your
@@ -89,9 +82,6 @@
       </div>
     </div>
   </div>
-  <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
-  <script src="/assets/auth.js"></script>
 </body>
 
 </html>
