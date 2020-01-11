@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, DoBootstrap, Injector } from '@angular/core';
+import { NgModule, DoBootstrap, Injector, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { createCustomElement } from '@angular/elements';
 import { EventsListComponent } from './components/events-list/events-list.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -45,6 +45,9 @@ import { LoggedOutComponent } from './components/logged-out/logged-out.component
     EventsLineGraphComponent,
     EventsSearchComponent,
     LoggedOutComponent
+  ],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA
   ]
 })
 export class AppModule implements DoBootstrap {
